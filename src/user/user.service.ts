@@ -1,10 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { constant } from 'src/common/constant';
-import { hashPassword } from 'src/common/helper';
 import { UserEntity } from 'src/entity/user';
 import { Repository } from 'typeorm';
 import { CreateUser } from './dto/createUser';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  comparePassword,
+  generateToken,
+  hashPassword,
+} from 'src/common/helper';
 
 @Injectable()
 export class UserService {
@@ -13,6 +22,7 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
+  // user register functionality
   async createUser(createObj: CreateUser): Promise<UserEntity> {
     const { Name, Email, Password } = createObj;
     const lowerEmail = Email.toLowerCase();
@@ -32,5 +42,28 @@ export class UserService {
     const createUserQuery = this.userRepository.create(dataObject);
     const saveUserData = await this.userRepository.save(createUserQuery);
     return saveUserData;
+  }
+
+  // user login functionality
+  async userLogin(Email: string, Password: string): Promise<string> {
+    const lowerEmail = Email.toLowerCase();
+    const findUserData = await this.userRepository.findOne({
+      where: {
+        Email: lowerEmail,
+      },
+      select: ['ID', 'Email', 'Name', 'Password'],
+    });
+    if (!findUserData) {
+      throw new NotFoundException(constant.EMAIL_NOT_FOUND);
+    }
+    const IsValidPassword = await comparePassword(
+      Password,
+      findUserData.Password,
+    );
+    if (!IsValidPassword) {
+      throw new BadGatewayException(constant.PROVIDED_WRONG_PASSWORD);
+    }
+    delete findUserData.Password;
+    return generateToken(findUserData);
   }
 }
