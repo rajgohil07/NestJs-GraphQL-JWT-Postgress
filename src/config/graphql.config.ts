@@ -6,4 +6,5 @@ export const GraphQLConfig: ApolloDriverConfig = {
   debug: true,
   playground: true,
   autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+  context: ({ req, res }) => ({ headers: req.headers }),
 };

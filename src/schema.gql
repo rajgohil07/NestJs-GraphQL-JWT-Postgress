@@ -16,13 +16,30 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type JWTMiddlewareDTO {
+  ID: Int!
+  Name: String!
+  Email: String!
+}
+
+type FindAllUserData {
+  ID: Int!
+  Name: String!
+  Email: String!
+}
+
+type findAllResponseDTO {
+  AllUserData: [FindAllUserData!]!
+  CurrentUser: JWTMiddlewareDTO!
+}
+
 type Token {
   Token: String!
 }
 
 type Query {
   userLogin(Email: String!, Password: String!): Token!
-  findAllUserData: [UserEntity!]!
+  findAllUserData: findAllResponseDTO!
 }
 
 type Mutation {

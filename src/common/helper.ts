@@ -2,6 +2,10 @@ import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { constant } from './constant';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 dotenv.config();
 
@@ -22,4 +26,19 @@ const generateToken = (dataObject: IGenerateToken) =>
     expiresIn: process.env.JWT_EXPIRE_TIME,
   });
 
-export { hashPassword, comparePassword, generateToken };
+const decryptToken = async (Token: string) => {
+  const token = Token.split(' ')[1];
+  try {
+    const decryptData = JWT.verify(token, process.env.JWT_SECRET);
+    return decryptData;
+  } catch (error) {
+    // throw token expired error
+    if (error.name === 'TokenExpiredError') {
+      throw new BadRequestException(constant.TOKEN_EXPIRED);
+    }
+    console.log('Error in token decryption', error);
+    throw new InternalServerErrorException(constant.TOKEN_MISSING);
+  }
+};
+
+export { hashPassword, comparePassword, generateToken, decryptToken };

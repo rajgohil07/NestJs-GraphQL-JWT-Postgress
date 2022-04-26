@@ -1,8 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { constant } from 'src/common/constant';
 import { UserEntity } from 'src/entity/user';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateUser } from './dto/createUser';
+import { FindAllUserData } from './dto/findAllResponseDTO';
 import {
   BadGatewayException,
   BadRequestException,
@@ -73,7 +74,10 @@ export class UserService {
     return { Token: `Bearer ${getToken}` };
   }
 
-  findAllUserData(): Promise<UserEntity[]> {
-    return this.userRepository.find();
+  findAllUserData(ID: number): Promise<FindAllUserData[]> {
+    return this.userRepository.find({
+      where: { ID: Not(ID) },
+      select: ['ID', 'Name', 'Email'],
+    });
   }
 }
