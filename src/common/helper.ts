@@ -5,7 +5,7 @@ import { constant } from './constant';
 
 dotenv.config();
 
-interface IGenerateToken {
+export interface IGenerateToken {
   ID: number;
   Name: string;
   Email: string;

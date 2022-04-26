@@ -13,6 +13,7 @@ import {
   comparePassword,
   generateToken,
   hashPassword,
+  IGenerateToken,
 } from 'src/common/helper';
 
 @Injectable()
@@ -24,11 +25,8 @@ export class UserService {
 
   // user register functionality
   async createUser(createObj: CreateUser): Promise<UserEntity> {
-    console.log('createObj', createObj);
     const { Name, Email, Password } = createObj;
-    console.log('Email', Email);
     const lowerEmail = Email.toLowerCase();
-    console.log('lowerEmail', lowerEmail);
     const findOneData = await this.userRepository.findOne({
       where: { Email: lowerEmail },
       select: ['Email'],
@@ -44,12 +42,11 @@ export class UserService {
     };
     const createUserQuery = this.userRepository.create(dataObject);
     const saveUserData = await this.userRepository.save(createUserQuery);
-    console.log('saveUserData', saveUserData);
     return saveUserData;
   }
 
   // user login functionality
-  async userLogin(Email: string, Password: string): Promise<string> {
+  async userLogin(Email: string, Password: string): Promise<{ Token: string }> {
     const lowerEmail = Email.toLowerCase();
     const findUserData = await this.userRepository.findOne({
       where: {
@@ -67,8 +64,13 @@ export class UserService {
     if (!IsValidPassword) {
       throw new BadGatewayException(constant.PROVIDED_WRONG_PASSWORD);
     }
-    delete findUserData.Password;
-    return generateToken(findUserData);
+    const payloadObject: IGenerateToken = {
+      ID: findUserData.ID,
+      Name: findUserData.Name,
+      Email: findUserData.Email,
+    };
+    const getToken = generateToken(payloadObject);
+    return { Token: `Bearer ${getToken}` };
   }
 
   findAllUserData(): Promise<UserEntity[]> {

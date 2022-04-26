@@ -21,7 +21,7 @@ export class UserResolver {
   userLogin(
     @Args('Email') Email: string,
     @Args('Password') Password: string,
-  ): Promise<string> {
+  ): Promise<{ Token: string }> {
     return this.userService.userLogin(Email, Password);
   }
 
