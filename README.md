@@ -27,7 +27,25 @@ query {
     Email
   }
 }
-
+# to get access of all registered user listing
+query {
+  findAllUserData {
+    AllUserData {
+      Name
+      Email
+      ID
+    }
+    CurrentUser {
+      Name
+      Email
+      ID
+    }
+  }
+}
+# pass JWT token as headers as displayed below
+{
+  "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MywiTmFtZSI6InJhaiBnb2hpbCIsIkVtYWlsIjoicmFqLmZhbW91czAwMTFAZ21haWwuY29tIiwiaWF0IjoxNjUwOTc1MDQ1LCJleHAiOjE2NTA5Nzg2NDV9.bvONQt1qzGtFd7O5chQwETnhrwW1ixsB37AzbXIRIEA"
+}
 ```
 
 ## Mutations
