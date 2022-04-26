@@ -3,10 +3,18 @@
 # ------------------------------------------------------
 
 type UserEntity {
+  ID: Int!
+  DateCreated: DateTime!
+  DateUpdated: DateTime!
   Name: String!
   Email: String!
   Password: String!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Token {
   Token: String!
@@ -14,6 +22,7 @@ type Token {
 
 type Query {
   userLogin(Email: String!, Password: String!): Token!
+  findAllUserData: [UserEntity!]!
 }
 
 type Mutation {

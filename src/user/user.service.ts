@@ -24,13 +24,16 @@ export class UserService {
 
   // user register functionality
   async createUser(createObj: CreateUser): Promise<UserEntity> {
+    console.log('createObj', createObj);
     const { Name, Email, Password } = createObj;
+    console.log('Email', Email);
     const lowerEmail = Email.toLowerCase();
+    console.log('lowerEmail', lowerEmail);
     const findOneData = await this.userRepository.findOne({
       where: { Email: lowerEmail },
       select: ['Email'],
     });
-    if (findOneData.Email) {
+    if (findOneData && findOneData.Email) {
       throw new BadRequestException(constant.USER_ALREADY_EXIST);
     }
     const hashPasswordValue = await hashPassword(Password);
@@ -41,6 +44,7 @@ export class UserService {
     };
     const createUserQuery = this.userRepository.create(dataObject);
     const saveUserData = await this.userRepository.save(createUserQuery);
+    console.log('saveUserData', saveUserData);
     return saveUserData;
   }
 
@@ -65,5 +69,9 @@ export class UserService {
     }
     delete findUserData.Password;
     return generateToken(findUserData);
+  }
+
+  findAllUserData(): Promise<UserEntity[]> {
+    return this.userRepository.find();
   }
 }

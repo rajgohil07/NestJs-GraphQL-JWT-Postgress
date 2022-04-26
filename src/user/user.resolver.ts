@@ -24,4 +24,9 @@ export class UserResolver {
   ): Promise<string> {
     return this.userService.userLogin(Email, Password);
   }
+
+  @Query(() => [UserEntity])
+  findAllUserData(): Promise<UserEntity[]> {
+    return this.userService.findAllUserData();
+  }
 }
